@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SR-Agents · Skill Retrieval Augmentation for Agentic AI</title>
+<meta name="description" content="Project page for Skill Retrieval Augmentation for Agentic AI. We introduce SRA-Bench, the first benchmark for decomposed evaluation of the full skill retrieval pipeline." />
+<meta property="og:title" content="SR-Agents: Skill Retrieval Augmentation for Agentic AI" />
+<meta property="og:description" content="A new paradigm where agents dynamically retrieve, incorporate, and apply reusable skills from large external corpora." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ─────────────────────────  NAVBAR  ───────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="#top">
+      <span class="nav-brand-dot"></span>
+      SR-Agents
+    </a>
+    <ul class="nav-links">
+      <li><a href="#paradigm">Paradigm</a></li>
+      <li><a href="#bench">Benchmark</a></li>
+      <li><a href="#findings">Findings</a></li>
+      <li><a href="#leaderboard">Leaderboard</a></li>
+      <li><a href="#future">Future</a></li>
+      <li><a href="#cite">Cite</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a class="nav-btn" href="https://arxiv.org/pdf/2604.24594" target="_blank" rel="noopener" aria-label="Paper">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"/></svg>
+        Paper
+      </a>
+      <a class="nav-btn" href="https://github.com/oneal2000/SR-Agents" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.6.07-.6 1 .07 1.53 1.04 1.53 1.04.9 1.53 2.36 1.09 2.93.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+        Code
+      </a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ─────────────────────────  HERO  ───────────────────────── -->
+<a id="top"></a>
+<header class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-content">
+    <div class="hero-tag">A new paradigm for agentic LLMs</div>
+    <h1 class="hero-title">
+      Skill Retrieval Augmentation<br />for Agentic AI
+    </h1>
+
+    <p class="hero-slogan">
+      RAG retrieves <em>knowledge</em>. SRA retrieves <em>capabilities</em>.
+    </p>
+
+    <p class="hero-subtitle">
+      Modern LLM agents rely on external <strong>skills</strong>:
+      reusable capability packages. Today's frameworks enumerate every
+      available skill in context, which breaks down as skill libraries
+      grow. <strong>SRA</strong> retrieves, incorporates, and applies
+      skills from a large external corpus on demand;
+      <strong>SRA-Bench</strong> is the first benchmark for decomposed
+      evaluation of the full pipeline.
+    </p>
+
+    <div class="authors">
+      <span class="author"><a href="https://oneal2000.github.io/" target="_blank" rel="noopener">Weihang Su</a><sup>1</sup></span>
+      <span class="author">Jianming Long<sup>1</sup></span>
+      <span class="author">Qingyao Ai<sup>†1</sup></span>
+      <span class="author">Yichen Tang<sup>1</sup></span>
+      <span class="author">Changyue Wang<sup>1</sup></span>
+      <span class="author">Yiteng Tu<sup>1</sup></span>
+      <span class="author">Yiqun Liu<sup>1</sup></span>
+    </div>
+    <div class="affiliation">
+      <sup>1</sup>Department of Computer Science and Technology, Tsinghua University &nbsp;·&nbsp;
+      <sup>†</sup>Corresponding author
+    </div>
+
+    <div class="hero-links">
+      <a class="btn btn-primary" href="https://arxiv.org/pdf/2604.24594" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"/></svg>
+        Paper
+      </a>
+      <a class="btn" href="https://arxiv.org/abs/2604.24594" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 4h14v2H5V4Zm0 6h14v10H5V10Zm2 2v6h2v-6H7Zm4 0v6h4v-2h-2v-4h-2Zm6 0v6h2v-2h2v-2h-2v-2h-2Z"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="https://github.com/oneal2000/SR-Agents" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.6.07-.6 1 .07 1.53 1.04 1.53 1.04.9 1.53 2.36 1.09 2.93.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+        Code
+      </a>
+      <a class="btn" href="https://huggingface.co/datasets/WeihangSu/SRA-Bench" target="_blank" rel="noopener">
+        <span class="hf-icon" aria-hidden="true">🤗</span> Dataset
+      </a>
+      <a class="btn" href="#leaderboard">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 21V9h4v12H5Zm5-12V3h4v18h-4V9Zm5 12v-8h4v8h-4Z"/></svg>
+        Leaderboard
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">5,400</span><span class="stat-label">test instances</span></div>
+      <div class="stat"><span class="stat-num">636</span><span class="stat-label">gold skills</span></div>
+      <div class="stat"><span class="stat-num">26,262</span><span class="stat-label">total corpus</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">capability domains</span></div>
+      <div class="stat"><span class="stat-num">8</span><span class="stat-label">LLMs evaluated</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ─────────────────────────  TL;DR  ───────────────────────── -->
+<section class="section tldr">
+  <div class="container">
+    <h2 class="section-title">TL;DR</h2>
+    <div class="tldr-grid">
+      <div class="tldr-card">
+        <div class="tldr-icon">📐</div>
+        <h3>New paradigm</h3>
+        <p>We formulate <strong>Skill Retrieval Augmentation</strong>,
+        a capability-centric counterpart to RAG. RAG retrieves
+        <em>knowledge</em>; SRA retrieves <em>capabilities</em>.</p>
+      </div>
+      <div class="tldr-card">
+        <div class="tldr-icon">🧪</div>
+        <h3>SRA-Bench</h3>
+        <p>5,400 capability-intensive instances spanning theorem
+        application, formal logic, tool use, medical calculation,
+        competition math, and code, paired with 636 gold skills
+        mixed into a 26K-skill web-collected corpus.</p>
+      </div>
+      <div class="tldr-card">
+        <div class="tldr-icon">🔬</div>
+        <h3>Decomposed eval</h3>
+        <p>Three coupled stages: <em>retrieval</em>,
+        <em>incorporation</em>, <em>application</em>. Each is
+        evaluated in isolation so we can pinpoint where SR-Agents
+        actually fail.</p>
+      </div>
+      <div class="tldr-card">
+        <div class="tldr-icon">💡</div>
+        <h3>Surprising bottleneck</h3>
+        <p>Better retrieval does not guarantee better answers.
+        The real gap is <strong>controlled, need-aware skill
+        utilization</strong>. Most LLMs load skills at similar
+        rates whether the task actually needs external capability
+        or not.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────  PARADIGM  ───────────────────────── -->
+<section class="section section-alt" id="paradigm">
+  <div class="container">
+    <span class="kicker">The Paradigm</span>
+    <h2 class="section-title">From RAG to SRA</h2>
+    <p class="lede">
+      RAG retrieves <em>knowledge</em>; SRA retrieves <em>capabilities</em>.
+      The pipeline has three tightly coupled stages: a skill must be
+      retrieved from a large library, deliberately incorporated into
+      the agent's active problem-solving state, and ultimately applied
+      to solve the task.
+    </p>
+
+    <figure class="figure">
+      <img src="assets/overall.png" alt="The SRA paradigm: an agent retrieves candidate skills from a large skill corpus, selectively incorporates useful skills into context, and applies them for downstream reasoning and acting." />
+      <figcaption>
+        <strong>Figure 1.</strong> The SRA paradigm. Black arrows denote
+        the standard workflow; blue arrows show iterative skill
+        retrieval during reasoning and acting.
+      </figcaption>
+    </figure>
+
+    <div class="stages">
+      <div class="stage">
+        <div class="stage-num">01</div>
+        <h3>Skill Retrieval</h3>
+        <p>Given a user query and a corpus of N skills, a retriever R
+        returns a ranked list of k ≪ N candidates. Reduces a massive
+        capability space to a manageable shortlist.</p>
+      </div>
+      <div class="stage">
+        <div class="stage-num">02</div>
+        <h3>Skill Incorporation</h3>
+        <p>The agent decides which retrieved skills, if any, should
+        enter its problem-solving state, and in what form (rewritten,
+        compressed, restructured, or model-adapted).</p>
+      </div>
+      <div class="stage">
+        <div class="stage-num">03</div>
+        <h3>Skill Application</h3>
+        <p>Conditioned on the incorporated skills, the agent solves the
+        task. Successful incorporation does <em>not</em> guarantee
+        successful application.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────  BENCH  ───────────────────────── -->
+<section class="section" id="bench">
+  <div class="container">
+    <span class="kicker">The Benchmark</span>
+    <h2 class="section-title">SRA-Bench at a glance</h2>
+    <p class="lede">
+      SRA-Bench is the first benchmark for decomposed evaluation of
+      the SRA pipeline. We curate capability-intensive instances from
+      six existing benchmarks, manually construct one gold skill per
+      annotation category, and embed them in a large web-collected
+      corpus that approximates a real, open skill ecosystem.
+    </p>
+
+    <div class="bench-table-wrap">
+      <table class="bench-table">
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Capability Type</th>
+            <th class="num">Instances</th>
+            <th class="num">Skills</th>
+            <th>Mapping</th>
+            <th>Evaluation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>TheoremQA</td><td>Theorem Application</td><td class="num">747</td><td class="num">320</td><td>Single</td><td>Rule-based</td></tr>
+          <tr><td>LogicBench</td><td>Logical Reasoning Patterns</td><td class="num">760</td><td class="num">19</td><td>Single</td><td>Rule-based</td></tr>
+          <tr><td>ToolQA</td><td>Tool-Use Workflows</td><td class="num">1,430</td><td class="num">14</td><td>Single</td><td>Rule-based</td></tr>
+          <tr><td>MedCalc-Bench</td><td>Medical Calculators</td><td class="num">1,100</td><td class="num">55</td><td>Single</td><td>Rule-based</td></tr>
+          <tr><td>CHAMP</td><td>Mathematical Concepts</td><td class="num">223</td><td class="num">89</td><td>Multi</td><td>Rule-based</td></tr>
+          <tr><td>BigCodeBench</td><td>Software Libraries</td><td class="num">1,140</td><td class="num">139</td><td>Multi</td><td>Execution</td></tr>
+          <tr class="total-row"><td><strong>Total</strong></td><td></td><td class="num"><strong>5,400</strong></td><td class="num"><strong>636 gold</strong></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsection-title">What does a gold skill look like?</h3>
+    <p class="lede">
+      A gold skill is a standalone Markdown artifact: a name, a
+      one-line description, and procedural content covering
+      applicability, the actual method, and worked examples. Many
+      skills also ship an executable tool. The example below is one
+      of 55 medical calculators in SRA-Bench.
+    </p>
+
+    <div class="skill-card">
+      <div class="skill-card-header">
+        <div>
+          <span class="skill-id">medcalcbench_046</span>
+          <h4 class="skill-name">Creatinine Clearance (Cockcroft-Gault Equation)</h4>
+          <p class="skill-desc">Estimate creatinine clearance for renal drug dosing, with BMI-based body-weight adjustment and a sex-specific factor.</p>
+        </div>
+        <span class="skill-tool-badge" title="Skill ships executable tools">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M21 12.4L14.4 19a4 4 0 0 1-5.6-5.6l8.5-8.5a2.5 2.5 0 0 1 3.6 3.5L12.4 17a1 1 0 0 1-1.4-1.4l7.1-7.1"/></svg>
+          executable tools
+        </span>
+      </div>
+
+      <div class="skill-card-body">
+        <p class="skill-intro">The Cockcroft-Gault equation estimates
+        creatinine clearance (CrCl) as a surrogate for glomerular
+        filtration rate, widely used for drug-dose adjustment in renal
+        impairment. The body weight that enters the formula depends on
+        the patient's BMI category.</p>
+
+        <div class="skill-section">
+          <h5>Required Inputs</h5>
+          <ul>
+            <li><strong>Age</strong>: in years</li>
+            <li><strong>Sex</strong>: male or female</li>
+            <li><strong>Height</strong>: in cm (× 2.54 from inches if needed)</li>
+            <li><strong>Weight</strong>: in kg (× 0.453592 from lbs if needed)</li>
+            <li><strong>Serum creatinine</strong>: in mg/dL (÷ 88.42 from µmol/L if needed)</li>
+          </ul>
+        </div>
+
+        <div class="skill-section">
+          <h5>Computation</h5>
+
+          <p><strong>Step 1.</strong> Calculate BMI.</p>
+          <pre class="skill-formula">BMI = weight_kg / (height_m)²</pre>
+
+          <p><strong>Step 2.</strong> Pick the weight that enters the formula based on BMI category.</p>
+          <ul>
+            <li><strong>BMI &lt; 18.5</strong> (underweight) → use actual body weight</li>
+            <li><strong>BMI 18.5–24.9</strong> (normal) → use min(IBW, actual weight)</li>
+            <li><strong>BMI ≥ 25</strong> (overweight / obese) → use adjusted body weight (ABW)</li>
+          </ul>
+          <pre class="skill-formula">IBW (male)   = 50   + 2.3 × (height_inches − 60)
+IBW (female) = 45.5 + 2.3 × (height_inches − 60)
+ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
+
+          <p><strong>Step 3.</strong> Apply the Cockcroft-Gault formula.</p>
+          <pre class="skill-formula">CrCl (mL/min) = ((140 − age) × adjusted_weight × gender_coef) / (serum_creatinine × 72)</pre>
+          <p>where <code>gender_coef = 1.0</code> for male and <code>0.85</code> for female.</p>
+        </div>
+
+        <div class="skill-section">
+          <h5>Calculation Tools</h5>
+          <pre class="skill-tool"><span class="t-kw">compute_ibw</span>(<span class="t-arg">height_cm</span>, <span class="t-arg">is_female</span>) → IBW in kg
+<span class="t-kw">compute_cg_crcl</span>(<span class="t-arg">age</span>, <span class="t-arg">weight_kg</span>, <span class="t-arg">height_cm</span>, <span class="t-arg">creatinine_mg_dl</span>, <span class="t-arg">is_female</span>) → CrCl in mL/min</pre>
+        </div>
+
+        <div class="skill-section">
+          <h5>Example</h5>
+          <p>65-year-old female, height 160 cm, weight 55 kg, serum creatinine 1.0 mg/dL.</p>
+
+          <p><strong>Step 1.</strong> BMI = 55 / (1.60)² = 21.5 → normal-weight category.</p>
+
+          <p><strong>Step 2.</strong> Compute IBW, then take min(IBW, actual weight).</p>
+          <pre class="skill-trace"><span class="t-call">TOOL_CALL</span>: compute_ibw(height_cm=160, is_female=True)
+<span class="t-result">TOOL_RESULT</span>: 52.38197</pre>
+          <p>IBW ≈ 52.38 kg &lt; 55 kg, so adjusted weight = 52.38 kg.</p>
+
+          <p><strong>Step 3.</strong> Apply the Cockcroft-Gault formula.</p>
+          <pre class="skill-trace"><span class="t-call">TOOL_CALL</span>: compute_cg_crcl(age=65, weight_kg=55, height_cm=160, creatinine_mg_dl=1.0, is_female=True)
+<span class="t-result">TOOL_RESULT</span>: 46.37987</pre>
+          <p>The patient's creatinine clearance is approximately 46.38 mL/min.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────  FINDINGS  ───────────────────────── -->
+<section class="section section-alt" id="findings">
+  <div class="container">
+    <span class="kicker">Empirical Study</span>
+    <h2 class="section-title">Decomposing the SRA pipeline</h2>
+    <p class="lede">
+      We structure the study around six research questions covering
+      the three stages of SRA: retrieval, incorporation, and
+      application. RQ1 / RQ2 ask whether skill augmentation helps and
+      how it copes with noise; RQ3 / RQ4 isolate retrieval quality
+      and its effect on end-task performance; RQ5 / RQ6 examine
+      whether agents incorporate skills in a relevance-aware and
+      need-aware way.
+    </p>
+
+    <!-- RQ1 spotlight: uplift chart -->
+    <div class="finding-spotlight finding-positive">
+      <div class="spotlight-text">
+        <h3 class="rq-question"><span class="rq-label">RQ1</span> Does the SRA paradigm improve agent performance over skill-free baselines?</h3>
+        <h3 class="rq-answer">Yes, sometimes by a wide margin.</h3>
+        <p>Oracle skills lift end-task accuracy by <strong>+14 to +23
+        points</strong> over the no-skill baseline. Among practical
+        methods, <strong>LLM Selection</strong> most reliably converts
+        retrieved candidates into downstream gains, often closing a
+        large fraction of the gap to the oracle upper bound. Yet every
+        practical method still trails Oracle, leaving substantial
+        headroom for better incorporation and application.</p>
+      </div>
+      <div class="spotlight-viz">
+        <svg class="chart" id="chart-uplift" viewBox="0 0 560 340" preserveAspectRatio="xMidYMid meet" aria-label="Direct vs Best Practical vs Oracle by model"></svg>
+        <div class="chart-caption">Accuracy on SRA-Bench (case-weighted, %). Each row is one base model.</div>
+      </div>
+    </div>
+
+    <!-- RQ2 spotlight: distractor robustness -->
+    <div class="finding-spotlight finding-positive">
+      <div class="spotlight-text">
+        <h3 class="rq-question"><span class="rq-label">RQ2</span> How robust are current SR-Agents to retrieval noise?</h3>
+        <h3 class="rq-answer">Brittle: accuracy decays as distractors accumulate.</h3>
+        <p>With the gold skill <em>guaranteed</em> in context, adding
+        2 / 4 / 8 hard-negative distractors still degrades accuracy
+        monotonically across every model. <strong>Progressive
+        Disclosure</strong> withholds full content until an explicit
+        reveal and is consistently more robust than <strong>Full Skill
+        Injection</strong>. Under heavy noise it matches or even
+        surpasses Full-Skill Injection on roughly half the models.</p>
+      </div>
+      <div class="spotlight-viz">
+        <svg class="chart" id="chart-distractor" viewBox="0 0 720 460" preserveAspectRatio="xMidYMid meet" aria-label="Accuracy vs number of distractor skills, per model"></svg>
+        <div class="chart-caption">End-task accuracy as the number of hard-negative distractors grows from 0 to 8, with the gold skill always present.</div>
+      </div>
+    </div>
+
+    <!-- RQ3 spotlight: retrieval heatmap -->
+    <div class="finding-spotlight finding-neutral">
+      <div class="spotlight-text">
+        <h3 class="rq-question"><span class="rq-label">RQ3</span> How effective are existing retrieval methods at identifying relevant skills?</h3>
+        <h3 class="rq-answer">Feasible, but not solved.</h3>
+        <p>Recall@1 swings from <strong>~2%</strong> (TF-IDF on
+        LogicBench) to <strong>~92%</strong> (Rerank on MedCalc).
+        Dense retrievers win where capabilities are expressed
+        semantically; sparse wins where they share lexical or
+        code-like surface patterns. <strong>LLM reranking</strong> on
+        BM25's top-50 is the strongest overall, yet still under 32%
+        on LogicBench, CHAMP, and BigCode. No first-stage retriever
+        wins every domain.</p>
+      </div>
+      <div class="spotlight-viz">
+        <svg class="chart" id="chart-retrieval" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet" aria-label="Recall@1 by retriever and dataset"></svg>
+        <div class="chart-caption">Recall@1 (%) by retriever × dataset. Best per dataset framed. &ldquo;Rerank ★&rdquo; = best-of-six LLM rerankers on BM25 top-50.</div>
+      </div>
+    </div>
+
+    <!-- RQ4 spotlight: retrieval gain → end-task gain disconnect -->
+    <div class="finding-spotlight finding-neutral">
+      <div class="spotlight-text">
+        <h3 class="rq-question"><span class="rq-label">RQ4</span> To what extent does retrieval quality influence end-to-end performance?</h3>
+        <h3 class="rq-answer">Necessary, but far from sufficient.</h3>
+        <p>Averaged across the six models, LLM rerank lifts BM25's
+        Recall@1 by <strong>+60 pp on MedCalc</strong>, yet the
+        downstream end-task gain is only +21 pp. On
+        <strong>CHAMP</strong>, retrieval improves by +7 pp but
+        end-task accuracy <em>drops</em>. Downstream success also
+        depends on the agent selecting, loading, and applying the
+        right candidate.</p>
+      </div>
+      <div class="spotlight-viz">
+        <svg class="chart" id="chart-rq4" viewBox="0 0 560 340" preserveAspectRatio="xMidYMid meet" aria-label="Retrieval gain vs end-task gain from LLM Rerank, averaged across 6 models per dataset"></svg>
+        <div class="chart-caption">Average gain from replacing BM25 with BM25 + LLM Rerank, across 6 models. Indigo bars: Recall@1 gain. Amber bars: end-task accuracy gain.</div>
+      </div>
+    </div>
+
+    <!-- RQ5 spotlight: relevance-aware loading -->
+    <div class="finding-spotlight finding-critical">
+      <div class="spotlight-text">
+        <h3 class="rq-question"><span class="rq-label">RQ5</span> Can current LLMs tell whether a gold skill is among the retrieved candidates?</h3>
+        <h3 class="rq-answer">Most cannot; only frontier models do.</h3>
+        <p>Open-source models load skills at nearly the same rate
+        whether a gold skill is among the top-50 candidates or not.
+        Only frontier models like <strong>GLM-5.1 (+35 pp)</strong>
+        and <strong>GPT-5.4 (+33 pp)</strong> show meaningful
+        relevance-aware loading: they noticeably hold back when no
+        gold candidate is in the pool.</p>
+      </div>
+      <div class="spotlight-viz">
+        <svg class="chart" id="chart-loading" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet" aria-label="Difference in skill-loading rate between gold-present and gold-absent candidate pools"></svg>
+        <div class="chart-caption">Δ Load Rate (percentage points): load rate when gold skill is in top-50 minus when it is not.</div>
+      </div>
+    </div>
+
+    <!-- RQ6 spotlight: need-aware = absent -->
+    <div class="finding-spotlight finding-critical">
+      <div class="spotlight-text">
+        <h3 class="rq-question"><span class="rq-label">RQ6</span> Do current LLMs load skills more often when the task actually needs external capability?</h3>
+        <h3 class="rq-answer">No: loading is largely unconditioned on need.</h3>
+        <p>Splitting instances by whether the model can solve them
+        natively, skill-loading rates remain remarkably similar. A
+        need-aware agent's two bars would diverge sharply, with wrong
+        &gt; correct. Instead most gaps are within ±6 pp, and
+        Llama-3.1-8B's 15-pp gap runs the <em>wrong</em> way (more
+        loading on tasks it can already solve). Skill loading is not
+        yet functioning as a targeted compensatory mechanism for
+        missing capability.</p>
+      </div>
+      <div class="spotlight-viz">
+        <svg class="chart" id="chart-rq6" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet" aria-label="Skill-loading rate split by whether the model can solve the task natively"></svg>
+        <div class="chart-caption">Skill-loading rate (%) on instances the model solves natively without skills (orange) vs instances it cannot (purple). Connector lines emphasize the (lack of) gap.</div>
+      </div>
+    </div>
+
+    <div class="finding-summary">
+      <h3>Bottom line</h3>
+      <p>SRA is real, but it is <strong>not just a retrieval
+      problem</strong>. The next frontier is teaching agents to
+      <em>know what they don't know</em>, expose retrieved skills
+      with care, and incorporate them only when they actually help.
+      Scalable SRA needs controlled exposure, need-aware
+      incorporation, and reliable application.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────  LEADERBOARD  ───────────────────────── -->
+<section class="section" id="leaderboard">
+  <div class="container">
+    <div class="lb-head">
+      <div>
+        <span class="kicker">Leaderboard</span>
+        <h2 class="section-title">End-task performance on SRA-Bench</h2>
+      </div>
+      <div class="lb-stamp" title="The leaderboard is updated as new submissions are verified.">
+        <span class="lb-stamp-dot" aria-hidden="true"></span>
+        <span>Living leaderboard · last updated 2026-05-20</span>
+      </div>
+    </div>
+    <p class="lede">
+      Six models × five skill-use strategies × six datasets, end-task
+      accuracy (%). Best per (model, dataset) in <strong>bold</strong>;
+      second-best <span class="underlined">underlined</span>. Oracle is
+      shown for reference. Toggle the controls to explore.
+    </p>
+
+    <details class="lb-submit">
+      <summary>
+        <span class="lb-submit-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        Submit a new result
+        <span class="lb-submit-chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+      </summary>
+      <div class="lb-submit-body">
+        <p>To add a new model, retriever, or skill-use method to the
+        leaderboard, email <a href="mailto:oneal2000@126.com">oneal2000@126.com</a>
+        with the following:</p>
+        <ol>
+          <li><strong>Method name</strong> and a one-paragraph
+          description (which provider, engine, retriever, and any
+          hyperparameters).</li>
+          <li><strong>Per-instance JSONL</strong> with fields
+          <code>instance_id</code>, <code>raw_output</code>, and (for
+          retrieval-based methods) <code>retrieved_skill_ids</code>,
+          so we can re-evaluate with the official pipeline.</li>
+          <li><strong>Reproducibility note</strong>: model identifier,
+          decoding settings (temperature, max tokens), and either an
+          open-source reference or a paper / report link.</li>
+        </ol>
+        <p class="lb-submit-foot">Verified submissions will be added
+        to this page after we re-run our official evaluation
+        pipeline on the submitted outputs.</p>
+      </div>
+    </details>
+
+    <div class="lb-controls">
+      <div class="lb-control">
+        <label for="lb-model">Model:</label>
+        <select id="lb-model">
+          <option value="all" selected>All models</option>
+          <option value="Llama-3.1-8B">Llama-3.1-8B</option>
+          <option value="Llama-3.3-70B">Llama-3.3-70B</option>
+          <option value="Mistral-3.1-24B">Mistral-3.1-24B</option>
+          <option value="Qwen3-4B">Qwen3-4B</option>
+          <option value="Qwen3-32B">Qwen3-32B</option>
+          <option value="Qwen3-235B">Qwen3-235B-A22B</option>
+          <option value="GLM-5.1">GLM-5.1</option>
+          <option value="GPT-5.4">GPT-5.4</option>
+        </select>
+      </div>
+      <div class="lb-control">
+        <label for="lb-metric">Methods:</label>
+        <select id="lb-metric">
+          <option value="all" selected>All (incl. Oracle)</option>
+          <option value="practical">Practical only</option>
+        </select>
+      </div>
+      <div class="lb-control lb-legend">
+        <span class="dot dot-oracle"></span> Oracle
+        <span class="dot dot-best"></span> Best practical
+        <span class="lb-hint">Click any column to sort</span>
+      </div>
+    </div>
+
+    <div class="lb-wrap">
+      <table class="lb-table lb-table-flat" id="lb-table">
+        <thead>
+          <tr>
+            <th class="lb-model sortable" data-sort="model">Model<span class="sort-arrow"></span></th>
+            <th class="lb-method sortable" data-sort="method">Method<span class="sort-arrow"></span></th>
+            <th class="num sortable" data-sort="0">TheoremQA<span class="sort-arrow"></span></th>
+            <th class="num sortable" data-sort="1">LogicBench<span class="sort-arrow"></span></th>
+            <th class="num sortable" data-sort="2">ToolQA<span class="sort-arrow"></span></th>
+            <th class="num sortable" data-sort="3">CHAMP<span class="sort-arrow"></span></th>
+            <th class="num sortable" data-sort="4">MedCalc<span class="sort-arrow"></span></th>
+            <th class="num sortable" data-sort="5">BigCode<span class="sort-arrow"></span></th>
+            <th class="num lb-avg sortable active desc" data-sort="avg">Average<span class="sort-arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody><!-- populated by script.js --></tbody>
+      </table>
+    </div>
+
+    <p class="lb-footnote">
+      Practical methods use BM25 as the underlying retriever.
+      Full-Skill Injection prepends the top-1 candidate;
+      LLM Selection lets the model pick one from the BM25 top-50;
+      Progressive Disclosure exposes a compact catalog and lets the
+      agent load on demand. See our paper for full protocol details.
+    </p>
+
+  </div>
+</section>
+
+<!-- ─────────────────────────  FUTURE WORK  ───────────────────────── -->
+<section class="section section-alt" id="future">
+  <div class="container">
+    <span class="kicker">Research Agenda</span>
+    <h2 class="section-title">Where SRA goes next</h2>
+    <p class="lede">
+      SRA should not be understood merely as a new retrieval problem
+      over skills, but as a broader research agenda for scalable
+      capability augmentation in agent systems. We sketch four concrete
+      directions below, complemented by the empirical challenges
+      SRA-Bench surfaces.
+    </p>
+
+    <div class="future-grid">
+      <article class="future-card">
+        <div class="future-card-head">
+          <span class="future-card-num">01</span>
+          <h3>Structured skill libraries</h3>
+        </div>
+        <p>Treating a corpus as a flat list breaks down at scale.
+        Skills have rich relationships (prerequisites, alternatives,
+        specializations, compositions) that future systems may
+        represent as graphs, hierarchies, clusters, or explicit
+        dependency structures.</p>
+        <div class="future-refs">
+          <span class="future-refs-label">Early work</span>
+          <a class="future-ref" href="https://arxiv.org/abs/2604.05333" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">Graph of Skills</span>
+          </a>
+          <a class="future-ref" href="https://arxiv.org/abs/2605.06978" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">Group of Skills</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="future-card">
+        <div class="future-card-head">
+          <span class="future-card-num">02</span>
+          <h3>Quality control &amp; skill evolution</h3>
+        </div>
+        <p>Open skill ecosystems are heterogeneous: many skills are
+        incomplete, ambiguous, or outdated. Offline pipelines for
+        validating, debugging, and refining skills, plus agentic
+        self-improvement loops that revise skills from failure cases,
+        turn the corpus into a continually maintained resource.</p>
+        <div class="future-refs">
+          <span class="future-refs-label">Early work</span>
+          <a class="future-ref" href="https://arxiv.org/abs/2602.08234" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">SkillRL</span>
+          </a>
+          <a class="future-ref" href="https://arxiv.org/abs/2603.01145" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">AutoSkill</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="future-card">
+        <div class="future-card-head">
+          <span class="future-card-num">03</span>
+          <h3>Utility-aware skill retrieval</h3>
+        </div>
+        <p>Skill retrievers should optimize for whether a skill can
+        actually solve the task, not just topical similarity.
+        Promising directions: training from end-task feedback,
+        multi-skill retrieval for complementary capabilities, and
+        retrieval conditioned on the agent's intermediate reasoning
+        state.</p>
+        <div class="future-refs">
+          <span class="future-refs-label">Early work</span>
+          <a class="future-ref" href="https://arxiv.org/abs/2603.22455" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">SkillRouter</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="future-card">
+        <div class="future-card-head">
+          <span class="future-card-num">04</span>
+          <h3>Parametric skill augmentation</h3>
+        </div>
+        <p>Why re-inject the same skill as text on every call?
+        Frequently used skills could be compressed offline into plug-in
+        parameter modules that load into the model on demand, while
+        rare, long-tail skills remain retrievable from the external
+        corpus. A hybrid architecture for scalable SRA.</p>
+        <div class="future-refs">
+          <span class="future-refs-label">RAG precedents</span>
+          <a class="future-ref" href="https://arxiv.org/abs/2501.15915" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">Parametric RAG</span>
+          </a>
+          <a class="future-ref" href="https://arxiv.org/abs/2503.23895" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">DyPRAG</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="future-card">
+        <div class="future-card-head">
+          <span class="future-card-num">05</span>
+          <h3>Need-aware incorporation</h3>
+        </div>
+        <p>A good agent should load external skills <em>only</em>
+        when its native parametric knowledge falls short. Today's
+        models load almost regardless of necessity. A reliable
+        need-detection mechanism is wide open.</p>
+        <div class="future-refs">
+          <span class="future-refs-label">No SRA work yet; RAG analogues</span>
+          <a class="future-ref" href="https://arxiv.org/abs/2403.10081" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">DRAGIN</span>
+          </a>
+          <a class="future-ref" href="https://arxiv.org/abs/2503.09516" target="_blank" rel="noopener">
+            <span class="ref-tag">arXiv</span><span class="ref-title">Search-R1</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="future-card">
+        <div class="future-card-head">
+          <span class="future-card-num">06</span>
+          <h3>Controlled skill exposure</h3>
+        </div>
+        <p>Full-Skill Injection is brittle under noisy candidate
+        sets; Progressive Disclosure helps but is inconsistent.
+        Exposure policies that match the cost and detail of each
+        candidate to its expected relevance are essential for
+        robust SR-Agents.</p>
+        <div class="future-refs">
+          <span class="future-refs-label">In the wild</span>
+          <a class="future-ref" href="https://agentskills.io/" target="_blank" rel="noopener">
+            <span class="ref-tag">Web</span><span class="ref-title">AgentSkills.io</span>
+          </a>
+          <a class="future-ref" href="https://github.com/anthropics/skills" target="_blank" rel="noopener">
+            <span class="ref-tag">Repo</span><span class="ref-title">Anthropic Agent Skills</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────  CITATION  ───────────────────────── -->
+<section class="section" id="cite">
+  <div class="container">
+    <span class="kicker">Cite us</span>
+    <h2 class="section-title">BibTeX</h2>
+    <p class="lede">If SRA-Bench or any of our findings inform your
+    work, we would be grateful for a citation, and a ⭐ on the
+    <a href="https://github.com/oneal2000/SR-Agents" target="_blank" rel="noopener">repo</a>.</p>
+    <div class="cite-card">
+      <button class="copy-btn" id="copy-bib" title="Copy BibTeX">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg>
+        <span>Copy</span>
+      </button>
+<pre id="bibtex">@article{su2026skill,
+  title={Skill Retrieval Augmentation for Agentic AI},
+  author={Su, Weihang and Long, Jianming and Ai, Qingyao and
+          Tang, Yichen and Wang, Changyue and Tu, Yiteng and Liu, Yiqun},
+  journal={arXiv preprint arXiv:2604.24594},
+  year={2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────  FOOTER  ───────────────────────── -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <div class="footer-brand">SR-Agents</div>
+      <p>A community resource for studying and evaluating Skill
+      Retrieval Augmentation.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2604.24594" target="_blank" rel="noopener">Paper · arXiv</a></li>
+        <li><a href="https://github.com/oneal2000/SR-Agents" target="_blank" rel="noopener">Code · GitHub</a></li>
+        <li><a href="https://huggingface.co/datasets/WeihangSu/SRA-Bench" target="_blank" rel="noopener">Dataset · Hugging Face</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Lab</h4>
+      <ul>
+        <li><a href="https://www.thuir.cn/" target="_blank" rel="noopener">THUIR · Tsinghua University</a></li>
+        <li>Contact: <a href="mailto:oneal2000@126.com">oneal2000@126.com</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>This page</h4>
+      <ul>
+        <li>Template inspired by <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies</a></li>
+        <li>Hosted on GitHub Pages</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    © 2026 SR-Agents contributors. Released under the MIT License.
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
