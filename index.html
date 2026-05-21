@@ -462,7 +462,7 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
     </div>
 
     <div class="finding-summary">
-      <h3>Bottom line</h3>
+      <h3>Takeaway</h3>
       <p>SRA is real, but it is <strong>not just a retrieval
       problem</strong>. The next frontier is teaching agents to
       <em>know what they don't know</em>, expose retrieved skills
@@ -480,10 +480,6 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
       <div>
         <span class="kicker">Leaderboard</span>
         <h2 class="section-title">End-task performance on SRA-Bench</h2>
-      </div>
-      <div class="lb-stamp" title="The leaderboard is updated as new submissions are verified.">
-        <span class="lb-stamp-dot" aria-hidden="true"></span>
-        <span>Living leaderboard · last updated 2026-05-20</span>
       </div>
     </div>
     <p class="lede">
@@ -504,24 +500,14 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         </span>
       </summary>
       <div class="lb-submit-body">
-        <p>To add a new model, retriever, or skill-use method to the
-        leaderboard, email <a href="mailto:oneal2000@126.com">oneal2000@126.com</a>
-        with the following:</p>
-        <ol>
-          <li><strong>Method name</strong> and a one-paragraph
-          description (which provider, engine, retriever, and any
-          hyperparameters).</li>
-          <li><strong>Per-instance JSONL</strong> with fields
-          <code>instance_id</code>, <code>raw_output</code>, and (for
-          retrieval-based methods) <code>retrieved_skill_ids</code>,
-          so we can re-evaluate with the official pipeline.</li>
-          <li><strong>Reproducibility note</strong>: model identifier,
-          decoding settings (temperature, max tokens), and either an
-          open-source reference or a paper / report link.</li>
-        </ol>
-        <p class="lb-submit-foot">Verified submissions will be added
-        to this page after we re-run our official evaluation
-        pipeline on the submitted outputs.</p>
+        <p>We welcome new entries. Email
+        <a href="mailto:oneal2000@126.com">oneal2000@126.com</a> with:</p>
+        <ul>
+          <li>A short <strong>name and description</strong> of the method.</li>
+          <li><strong>Per-instance outputs</strong> on SRA-Bench.</li>
+          <li>A <strong>reproducibility pointer</strong> &mdash; a code link,
+          a paper, or a brief setup note.</li>
+        </ul>
       </div>
     </details>
 
