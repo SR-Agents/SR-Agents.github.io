@@ -171,18 +171,22 @@ function renderLeaderboard() {
     return dir * (a.vals[ci] - b.vals[ci]);
   });
 
-  // compute per-column best & second among PRACTICAL rows
-  // — when a single model is selected, scope is just that model;
-  // otherwise scope is the full set (all models × practical methods).
-  const practicalRows = rows.filter(r => r.method.kind === 'practical');
-  const colBests = COLS.map((_, ci) => {
-    const vals = practicalRows.map(r => r.vals[ci]);
-    const sorted = [...new Set(vals)].sort((a, b) => b - a);
-    return { best: sorted[0], second: sorted[1] };
-  });
-  const avgVals = practicalRows.map(r => r.avg);
-  const avgSorted = [...new Set(avgVals)].sort((a, b) => b - a);
-  const avgBest = { best: avgSorted[0], second: avgSorted[1] };
+  // Compute best and second-best PRACTICAL methods independently for each
+  // model, matching the table description and avoiding cross-model highlights.
+  const bestsByModel = new Map();
+  for (const model of new Set(rows.map(r => r.model))) {
+    const practicalRows = rows.filter(r =>
+      r.model === model && r.method.kind === 'practical'
+    );
+    const rank = vals => {
+      const sorted = [...new Set(vals)].sort((a, b) => b - a);
+      return { best: sorted[0], second: sorted[1] };
+    };
+    bestsByModel.set(model, {
+      cols: COLS.map((_, ci) => rank(practicalRows.map(r => r.vals[ci]))),
+      avg: rank(practicalRows.map(r => r.avg)),
+    });
+  }
 
   // render
   rows.forEach((r, i) => {
@@ -204,8 +208,9 @@ function renderLeaderboard() {
       td.className = 'num';
       td.textContent = v.toFixed(1);
       if (r.method.kind === 'practical') {
-        if (v === colBests[ci].best) td.classList.add('cell-best');
-        else if (v === colBests[ci].second) td.classList.add('cell-second');
+        const thresholds = bestsByModel.get(r.model).cols[ci];
+        if (v === thresholds.best) td.classList.add('cell-best');
+        else if (v === thresholds.second) td.classList.add('cell-second');
       }
       tr.appendChild(td);
     });
@@ -214,8 +219,9 @@ function renderLeaderboard() {
     tdAvg.className = 'num lb-avg';
     tdAvg.textContent = r.avg.toFixed(1);
     if (r.method.kind === 'practical') {
-      if (r.avg === avgBest.best) tdAvg.classList.add('cell-best');
-      else if (r.avg === avgBest.second) tdAvg.classList.add('cell-second');
+      const thresholds = bestsByModel.get(r.model).avg;
+      if (r.avg === thresholds.best) tdAvg.classList.add('cell-best');
+      else if (r.avg === thresholds.second) tdAvg.classList.add('cell-second');
     }
     tr.appendChild(tdAvg);
 
@@ -224,8 +230,9 @@ function renderLeaderboard() {
 }
 
 function setupLeaderboardSort() {
-  document.querySelectorAll('#lb-table th.sortable').forEach(th => {
-    th.addEventListener('click', () => {
+  const headers = [...document.querySelectorAll('#lb-table th.sortable')];
+
+  const sortBy = th => {
       const key = th.dataset.sort;
       if (LB_STATE.sort === key) {
         LB_STATE.dir = LB_STATE.dir === 'desc' ? 'asc' : 'desc';
@@ -234,11 +241,21 @@ function setupLeaderboardSort() {
         // sensible default direction per column
         LB_STATE.dir = (key === 'model' || key === 'method') ? 'asc' : 'desc';
       }
-      document.querySelectorAll('#lb-table th.sortable').forEach(h => {
+      headers.forEach(h => {
         h.classList.remove('active', 'desc', 'asc');
+        h.removeAttribute('aria-sort');
       });
       th.classList.add('active', LB_STATE.dir);
+      th.setAttribute('aria-sort', LB_STATE.dir === 'asc' ? 'ascending' : 'descending');
       renderLeaderboard();
+  };
+
+  headers.forEach(th => {
+    th.addEventListener('click', () => sortBy(th));
+    th.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      sortBy(th);
     });
   });
 }
@@ -955,6 +972,7 @@ function setupCopyButton() {
 
 function setupSmoothScroll() {
   const DURATION = 500;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const easeInOut = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
   document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -975,6 +993,11 @@ function setupSmoothScroll() {
   });
 
   function animateScroll(targetY, href) {
+    if (reduceMotion.matches) {
+      window.scrollTo(0, targetY);
+      if (href) history.replaceState(null, '', href);
+      return;
+    }
     const startY = window.scrollY;
     const distance = targetY - startY;
     if (Math.abs(distance) < 2) return;
@@ -1012,13 +1035,23 @@ function setupNavbar() {
 
   const updateActive = () => {
     const y = window.scrollY + 100;
-    let activeId = sectionIds[0];
+    let activeId = null;
     for (const s of sections) {
       if (s.offsetTop <= y) activeId = s.id;
     }
     links.forEach(a => {
-      a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+      const active = activeId && a.getAttribute('href') === '#' + activeId;
+      a.classList.toggle('active', active);
+      if (active) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
     });
+  };
+
+  const closeMenu = () => {
+    nav.classList.remove('open');
+    toggle.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open menu');
   };
 
   // mobile toggle
@@ -1026,13 +1059,19 @@ function setupNavbar() {
     const open = nav.classList.toggle('open');
     toggle.classList.toggle('open', open);
     toggle.setAttribute('aria-expanded', open);
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   });
   // close menu on link click (mobile)
-  links.forEach(a => a.addEventListener('click', () => {
-    nav.classList.remove('open');
-    toggle.classList.remove('open');
-    toggle.setAttribute('aria-expanded', 'false');
-  }));
+  links.forEach(a => a.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) {
+      closeMenu();
+      toggle.focus();
+    }
+  });
+  document.addEventListener('click', e => {
+    if (nav.classList.contains('open') && !nav.contains(e.target)) closeMenu();
+  });
 
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

@@ -5,15 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SR-Agents · Skill Retrieval Augmentation for Agentic AI</title>
 <meta name="description" content="Project page for Skill Retrieval Augmentation for Agentic AI. We introduce SRA-Bench, the first benchmark for decomposed evaluation of the full skill retrieval pipeline." />
+<meta name="theme-color" content="#fbfaf7" />
 <meta property="og:title" content="SR-Agents: Skill Retrieval Augmentation for Agentic AI" />
 <meta property="og:description" content="A new paradigm where agents dynamically retrieve, incorporate, and apply reusable skills from large external corpora." />
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content="SR-Agents" />
+<meta property="og:url" content="https://sr-agents.github.io/" />
+<meta property="og:image" content="https://sr-agents.github.io/assets/overall.png" />
+<meta property="og:image:width" content="3553" />
+<meta property="og:image:height" content="1303" />
+<meta property="og:image:alt" content="The Skill Retrieval Augmentation pipeline" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SR-Agents: Skill Retrieval Augmentation for Agentic AI" />
+<meta name="twitter:description" content="SRA-Bench decomposes skill retrieval, incorporation, and application for agentic AI." />
+<meta name="twitter:image" content="https://sr-agents.github.io/assets/overall.png" />
+<link rel="canonical" href="https://sr-agents.github.io/" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- ─────────────────────────  NAVBAR  ───────────────────────── -->
 <nav class="navbar" id="navbar">
@@ -22,7 +37,7 @@
       <span class="nav-brand-dot"></span>
       SR-Agents
     </a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="primary-navigation">
       <li><a href="#paradigm">Paradigm</a></li>
       <li><a href="#bench">Benchmark</a></li>
       <li><a href="#findings">Findings</a></li>
@@ -40,11 +55,13 @@
         Code
       </a>
     </div>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primary-navigation">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
+
+<main id="main-content" tabindex="-1">
 
 <!-- ─────────────────────────  HERO  ───────────────────────── -->
 <a id="top"></a>
@@ -178,7 +195,7 @@
     </p>
 
     <figure class="figure">
-      <img src="assets/overall.png" alt="The SRA paradigm: an agent retrieves candidate skills from a large skill corpus, selectively incorporates useful skills into context, and applies them for downstream reasoning and acting." />
+      <img src="assets/overall.png" width="3553" height="1303" loading="lazy" decoding="async" alt="The SRA paradigm: an agent retrieves candidate skills from a large skill corpus, selectively incorporates useful skills into context, and applies them for downstream reasoning and acting." />
       <figcaption>
         <strong>Figure 1.</strong> The SRA paradigm. Black arrows denote
         the standard workflow; blue arrows show iterative skill
@@ -367,8 +384,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         headroom for better incorporation and application.</p>
       </div>
       <div class="spotlight-viz">
-        <svg class="chart" id="chart-uplift" viewBox="0 0 560 340" preserveAspectRatio="xMidYMid meet" aria-label="Direct vs Best Practical vs Oracle by model"></svg>
-        <div class="chart-caption">Accuracy on SRA-Bench (case-weighted, %). Each row is one base model.</div>
+        <svg class="chart" id="chart-uplift" viewBox="0 0 560 340" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Direct vs Best Practical vs Oracle by model" aria-describedby="chart-uplift-caption"></svg>
+        <div class="chart-caption" id="chart-uplift-caption">Accuracy on SRA-Bench (case-weighted, %). Each row is one base model.</div>
       </div>
     </div>
 
@@ -386,8 +403,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         surpasses Full-Skill Injection on roughly half the models.</p>
       </div>
       <div class="spotlight-viz">
-        <svg class="chart" id="chart-distractor" viewBox="0 0 720 460" preserveAspectRatio="xMidYMid meet" aria-label="Accuracy vs number of distractor skills, per model"></svg>
-        <div class="chart-caption">End-task accuracy as the number of hard-negative distractors grows from 0 to 8, with the gold skill always present.</div>
+        <svg class="chart" id="chart-distractor" viewBox="0 0 720 460" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Accuracy vs number of distractor skills, per model" aria-describedby="chart-distractor-caption"></svg>
+        <div class="chart-caption" id="chart-distractor-caption">End-task accuracy as the number of hard-negative distractors grows from 0 to 8, with the gold skill always present.</div>
       </div>
     </div>
 
@@ -406,8 +423,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         wins every domain.</p>
       </div>
       <div class="spotlight-viz">
-        <svg class="chart" id="chart-retrieval" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet" aria-label="Recall@1 by retriever and dataset"></svg>
-        <div class="chart-caption">Recall@1 (%) by retriever × dataset. Best per dataset framed. &ldquo;Rerank ★&rdquo; = best-of-six LLM rerankers on BM25 top-50.</div>
+        <svg class="chart" id="chart-retrieval" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Recall@1 by retriever and dataset" aria-describedby="chart-retrieval-caption"></svg>
+        <div class="chart-caption" id="chart-retrieval-caption">Recall@1 (%) by retriever × dataset. Best per dataset framed. &ldquo;Rerank ★&rdquo; = best-of-six LLM rerankers on BM25 top-50.</div>
       </div>
     </div>
 
@@ -425,8 +442,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         right candidate.</p>
       </div>
       <div class="spotlight-viz">
-        <svg class="chart" id="chart-rq4" viewBox="0 0 560 322" preserveAspectRatio="xMidYMid meet" aria-label="Retrieval gain vs end-task gain from LLM Rerank, averaged across 6 models per dataset"></svg>
-        <div class="chart-caption">Average gain from replacing BM25 with BM25 + LLM Rerank, across 6 models. Indigo bars: Recall@1 gain. Amber bars: end-task accuracy gain.</div>
+        <svg class="chart" id="chart-rq4" viewBox="0 0 560 322" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Retrieval gain vs end-task gain from LLM Rerank, averaged across 6 models per dataset" aria-describedby="chart-rq4-caption"></svg>
+        <div class="chart-caption" id="chart-rq4-caption">Average gain from replacing BM25 with BM25 + LLM Rerank, across 6 models. Indigo bars: Recall@1 gain. Amber bars: end-task accuracy gain.</div>
       </div>
     </div>
 
@@ -443,8 +460,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         gold candidate is in the pool.</p>
       </div>
       <div class="spotlight-viz">
-        <svg class="chart" id="chart-loading" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet" aria-label="Difference in skill-loading rate between gold-present and gold-absent candidate pools"></svg>
-        <div class="chart-caption">Δ Load Rate (percentage points): load rate when gold skill is in top-50 minus when it is not.</div>
+        <svg class="chart" id="chart-loading" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Difference in skill-loading rate between gold-present and gold-absent candidate pools" aria-describedby="chart-loading-caption"></svg>
+        <div class="chart-caption" id="chart-loading-caption">Δ Load Rate (percentage points): load rate when gold skill is in top-50 minus when it is not.</div>
       </div>
     </div>
 
@@ -463,8 +480,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
         missing capability.</p>
       </div>
       <div class="spotlight-viz">
-        <svg class="chart" id="chart-rq6" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet" aria-label="Skill-loading rate split by whether the model can solve the task natively"></svg>
-        <div class="chart-caption">Skill-loading rate (%) on instances the model solves natively without skills (orange) vs instances it cannot (purple). Connector lines emphasize the (lack of) gap.</div>
+        <svg class="chart" id="chart-rq6" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Skill-loading rate split by whether the model can solve the task natively" aria-describedby="chart-rq6-caption"></svg>
+        <div class="chart-caption" id="chart-rq6-caption">Skill-loading rate (%) on instances the model solves natively without skills (orange) vs instances it cannot (purple). Connector lines emphasize the (lack of) gap.</div>
       </div>
     </div>
 
@@ -543,23 +560,25 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
       <div class="lb-control lb-legend">
         <span class="dot dot-oracle"></span> Oracle
         <span class="dot dot-best"></span> Best practical
-        <span class="lb-hint">Click any column to sort</span>
+        <span class="lb-hint">Click or press Enter on a column to sort</span>
       </div>
     </div>
 
-    <div class="lb-wrap">
+    <p class="lb-scroll-hint" id="lb-scroll-hint">Scroll horizontally to compare all datasets.</p>
+    <div class="lb-wrap" aria-describedby="lb-scroll-hint">
       <table class="lb-table lb-table-flat" id="lb-table">
+        <caption class="sr-only">End-task accuracy by model, skill-use method, and dataset</caption>
         <thead>
           <tr>
-            <th class="lb-model sortable" data-sort="model">Model<span class="sort-arrow"></span></th>
-            <th class="lb-method sortable" data-sort="method">Method<span class="sort-arrow"></span></th>
-            <th class="num sortable" data-sort="0">TheoremQA<span class="sort-arrow"></span></th>
-            <th class="num sortable" data-sort="1">LogicBench<span class="sort-arrow"></span></th>
-            <th class="num sortable" data-sort="2">ToolQA<span class="sort-arrow"></span></th>
-            <th class="num sortable" data-sort="3">CHAMP<span class="sort-arrow"></span></th>
-            <th class="num sortable" data-sort="4">MedCalc<span class="sort-arrow"></span></th>
-            <th class="num sortable" data-sort="5">BigCode<span class="sort-arrow"></span></th>
-            <th class="num lb-avg sortable active desc" data-sort="avg">Average<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="lb-model sortable" data-sort="model">Model<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="lb-method sortable" data-sort="method">Method<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="num sortable" data-sort="0">TheoremQA<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="num sortable" data-sort="1">LogicBench<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="num sortable" data-sort="2">ToolQA<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="num sortable" data-sort="3">CHAMP<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="num sortable" data-sort="4">MedCalc<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" class="num sortable" data-sort="5">BigCode<span class="sort-arrow"></span></th>
+            <th scope="col" tabindex="0" aria-sort="descending" class="num lb-avg sortable active desc" data-sort="avg">Average<span class="sort-arrow"></span></th>
           </tr>
         </thead>
         <tbody><!-- populated by script.js --></tbody>
@@ -728,7 +747,7 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
     <div class="cite-card">
       <button class="copy-btn" id="copy-bib" title="Copy BibTeX">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg>
-        <span>Copy</span>
+        <span aria-live="polite">Copy</span>
       </button>
 <pre id="bibtex">@article{su2026skill,
   title={Skill Retrieval Augmentation for Agentic AI},
@@ -740,6 +759,8 @@ ABW          = IBW + 0.4 × (actual_weight − IBW)</pre>
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- ─────────────────────────  FOOTER  ───────────────────────── -->
 <footer class="footer">
