@@ -374,6 +374,18 @@ function svg(tag, attrs = {}, parent = null) {
   return el;
 }
 
+// Center a completed legend over its plot area. Re-run after web fonts settle
+// so the alignment remains correct when the fallback font is swapped out.
+function centerSvgGroup(group, left, right, y) {
+  const center = () => {
+    group.setAttribute('transform', `translate(0, ${y})`);
+    const box = group.getBBox();
+    group.setAttribute('transform', `translate(${(left + right - box.width) / 2 - box.x}, ${y})`);
+  };
+  center();
+  document.fonts?.ready.then(center);
+}
+
 // ─────────────  Figure 2 — Distractor robustness (RQ2)
 // 2×3 grid of mini line charts, one per model.
 // Values from `scripts/plots/exp3_injection_curves.py` (case-weighted).
@@ -602,11 +614,11 @@ function renderUpliftChart() {
     .sort((a, b) => b.oracle - a.oracle);
 
   const W = 560, H = 340;
-  const padL = 112, padR = 60, padT = 30, padB = 36;
+  const padL = 104, padR = 60, padT = 30, padB = 36;
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
 
-  const xMin = 25, xMax = 75;
+  const xMin = 29, xMax = 74;
   const xScale = v => padL + ((v - xMin) / (xMax - xMin)) * plotW;
 
   // x grid
@@ -669,6 +681,7 @@ function renderUpliftChart() {
   legendEntry(0, COLOR_DIRECT, 'LLM Direct');
   legendEntry(90, COLOR_PRACTICAL, 'Best Practical');
   legendEntry(208, COLOR_ORACLE, 'Oracle Skill');
+  centerSvgGroup(lg, padL, W - padR, padT - 18);
 }
 
 // ─────────────────────────────────────────────────────────
@@ -736,8 +749,8 @@ function renderRq4Chart() {
     return { ds, retrieval: sR / modelList.length, endTask: sE / modelList.length };
   });
 
-  const W = 560, H = 340;
-  const padL = 44, padR = 16, padT = 30, padB = 56;
+  const W = 560, H = 322;
+  const padL = 58, padR = 16, padT = 30, padB = 46;
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
 
@@ -790,7 +803,7 @@ function renderRq4Chart() {
     drawBar(gx + barW + 4, d.endTask, COLOR_E);
 
     // dataset label below x axis
-    svg('text', { x: gx + barW + 2, y: H - 22,
+    svg('text', { x: gx + barW + 2, y: H - 26,
       'text-anchor': 'middle', 'font-size': 11.5,
       'font-weight': 500, fill: '#181a2c' }, root)
       .textContent = d.ds;
@@ -810,6 +823,7 @@ function renderRq4Chart() {
   svg('rect', { x: 170, y: -7, width: 12, height: 8, fill: COLOR_E, rx: 2 }, lg);
   svg('text', { x: 186, y: 1, 'font-size': 12, fill: '#181a2c' }, lg)
     .textContent = 'End-task gain (Δacc)';
+  centerSvgGroup(lg, padL, W - padR, padT - 14);
 }
 
 // ─────────────────────────────────────────────────────────
@@ -900,6 +914,7 @@ function renderRq6Chart() {
   svg('circle', { cx: 240, cy: 0, r: 5, fill: COLOR_WRONG, stroke: '#fff', 'stroke-width': 1.2 }, lg);
   svg('text', { x: 248, y: 4, 'font-size': 11.5, fill: '#181a2c' }, lg)
     .textContent = 'Skill-free wrong (help needed)';
+  centerSvgGroup(lg, padL, W - padR, padT - 14);
 }
 
 // ─────────────────────────────────────────────────────────
